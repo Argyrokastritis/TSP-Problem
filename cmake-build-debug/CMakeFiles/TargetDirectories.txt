@@ -1,3 +1,0 @@
-C:/Users/giann/CLionProjects/TSP Problem/cmake-build-debug/CMakeFiles/TSP_Problem.dir
-C:/Users/giann/CLionProjects/TSP Problem/cmake-build-debug/CMakeFiles/edit_cache.dir
-C:/Users/giann/CLionProjects/TSP Problem/cmake-build-debug/CMakeFiles/rebuild_cache.dir
