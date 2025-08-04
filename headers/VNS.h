@@ -6,7 +6,7 @@
 int kmax = 10;  // Maximum shaking intensity
 int maxIterations = 100; // Maximum number of iterations
 
-void twoOptNeighborhoodChange(struct Graph *graph, int *tour, int i, int j) {
+/* void twoOptNeighborhoodChange(struct Graph *graph, int *tour, int i, int j) {
     // Implement the 2-opt neighborhood change operation.
     // Reverse the portion of the tour from index i to j.
     if (i >= j || i < 0 || j >= graph->numNodes) {
@@ -22,7 +22,23 @@ void twoOptNeighborhoodChange(struct Graph *graph, int *tour, int i, int j) {
         i++;
         j--;
     }
+}*/
+
+void twoOptNeighborhoodChange(struct Graph *graph, int *tour, int i, int j) {
+    if (i >= j || i < 0 || j >= graph->numNodes) {
+        // printf("❌ twoOptNeighborhoodChange invalid indices: i=%d, j=%d, numNodes=%d\n", i, j, graph->numNodes);
+        return;
+    }
+
+    while (i < j) {
+        int temp = tour[i];
+        tour[i] = tour[j];
+        tour[j] = temp;
+        i++;
+        j--;
+    }
 }
+
 
 void subMSTNeighborhoodChange(struct Graph *graph, int *tour, int k) {
     if (k <= 1 || k >= graph->numNodes) {
@@ -75,7 +91,7 @@ void shake(struct Graph *graph, int *tour, int k, int numNodes) {
 }
 
 
-bool improveTour(struct Graph *graph, int *tour, int numNodes, int i, int j) {
+/* bool improveTour(struct Graph *graph, int *tour, int numNodes, int i, int j) {
     // Check if swapping edges (i, i+1) and (j, j+1) will lead to a shorter tour
     double dist_before = calculateDistance(graph->nodes[tour[i]], graph->nodes[tour[i + 1]])
                          + calculateDistance(graph->nodes[tour[j]], graph->nodes[tour[j + 1]]);
@@ -84,10 +100,41 @@ bool improveTour(struct Graph *graph, int *tour, int numNodes, int i, int j) {
                         + calculateDistance(graph->nodes[tour[i + 1]], graph->nodes[tour[j + 1]]);
 
     return dist_after < dist_before;
+}*/
+
+bool improveTour(struct Graph *graph, int *tour, int numNodes, int i, int j) {
+    if (i + 1 >= numNodes || j + 1 >= numNodes) {
+        // printf("❌ improveTour out-of-bounds: i=%d, j=%d, numNodes=%d\n", i, j, numNodes);
+        return false;
+    }
+
+    double dist_before = calculateDistance(graph->nodes[tour[i]], graph->nodes[tour[i + 1]])
+                       + calculateDistance(graph->nodes[tour[j]], graph->nodes[tour[j + 1]]);
+
+    double dist_after = calculateDistance(graph->nodes[tour[i]], graph->nodes[tour[j]])
+                      + calculateDistance(graph->nodes[tour[i + 1]], graph->nodes[tour[j + 1]]);
+
+    return dist_after < dist_before;
 }
 
-void reverseSegment(int *tour, int i, int j, int numNodes) {
+
+/*void reverseSegment(int *tour, int i, int j, int numNodes) {
     // Reverse the portion of the tour from index i to j
+    while (i < j) {
+        int temp = tour[i];
+        tour[i] = tour[j];
+        tour[j] = temp;
+        i++;
+        j--;
+    }
+}*/
+
+void reverseSegment(int *tour, int i, int j, int numNodes) {
+    if (i < 0 || j >= numNodes || i >= j) {
+        // printf("❌ reverseSegment invalid indices: i=%d, j=%d, numNodes=%d\n", i, j, numNodes);
+        return;
+    }
+
     while (i < j) {
         int temp = tour[i];
         tour[i] = tour[j];
@@ -97,13 +144,14 @@ void reverseSegment(int *tour, int i, int j, int numNodes) {
     }
 }
 
+
 void twoOptLocalSearch(struct Graph *graph, int *tour, int numNodes) {
     bool improved = true;
 
     while (improved) {
         improved = false;
         for (int i = 0; i < numNodes - 2; i++) {
-            for (int j = i + 2; j < numNodes; j++) {
+            for (int j = i + 2; j < numNodes - 1; j++) {
                 // Check if reversing the segment between indices i and j improves the tour
                 if (improveTour(graph, tour, numNodes, i, j)) {
                     // Reverse the segment

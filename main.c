@@ -19,6 +19,13 @@ int main() {
 
     readInput(&graph, inputFilename);
 
+    printf("\n📌 Instance loaded: %s\n", inputFilename);
+    printf("📦 Number of nodes: %d\n", graph.numNodes);
+
+    if (graph.numNodes < 100) {
+        printf("⚠️ Warning: Small instance detected (<100 nodes). VNS may be unstable without proper parameter tuning.\n");
+    }
+
     int tour[MAX_NODES];
     for (int i = 0; i < graph.numNodes; i++) {
         tour[i] = i;
@@ -26,11 +33,10 @@ int main() {
 
     struct timeval start, end;
 
-    //select algorithm
     int choice;
     char algorithmName[MAX_ALGORITHM_NAME];
 
-    printf("Select the desired algorithm:\n");
+    printf("\nSelect the desired algorithm:\n");
     printf("  1. Lin-Kernighan (LK)\n");
     printf("  2. Variable Neighborhood Search (VNS)\n");
     printf("  3. Generalized Partition Crossover (GPX)\n");
@@ -42,45 +48,63 @@ int main() {
     switch (choice) {
         case 1:
             strncpy(algorithmName, "LK", MAX_ALGORITHM_NAME);
-            gettimeofday(&start, NULL); //start timer
+            gettimeofday(&start, NULL);
             lkhAlgorithm(&graph, tour);
-            gettimeofday(&end, NULL); //stop timer
+            gettimeofday(&end, NULL);
             break;
         case 2:
             srand(time(NULL));
             strncpy(algorithmName, "VNS", MAX_ALGORITHM_NAME);
-            gettimeofday(&start, NULL); //start timer
+
+            // ✅ Προληπτικός έλεγχος για out-of-bounds
+            if (graph.numNodes > MAX_NODES) {
+                printf("❌ Error: Number of nodes exceeds MAX_NODES (%d). Aborting VNS.\n", MAX_NODES);
+                return 1;
+            }
+
+            // ✅ Εκτύπωση παραμέτρων πριν την εκτέλεση
+            // printf("🔍 Executing VNS with parameters:\n");
+            // printf("   - kmax: %d\n", kmax);
+            // printf("   - maxIterations: %d\n", maxIterations);
+            // printf("   - numNodes: %d\n", graph.numNodes);
+
+            gettimeofday(&start, NULL);
             vnsAlgorithm(&graph, tour, kmax, maxIterations);
-            gettimeofday(&end, NULL); //stop timer
+            gettimeofday(&end, NULL);
+
+            /* ✅ Εκτύπωση πρώτων 10 κόμβων της λύσης για έλεγχο
+            printf("🧪 Sample tour output (first 10 nodes): ");
+            for (int i = 0; i < 10 && i < graph.numNodes; i++) {
+                printf("%d ", tour[i]);
+            }
+            printf("\n");*/
+
             break;
         case 3:
             strncpy(algorithmName, "GPX", MAX_ALGORITHM_NAME);
-            gettimeofday(&start, NULL); //start timer
+            gettimeofday(&start, NULL);
             gpcxAlgorithm(&graph, tour);
-            gettimeofday(&end, NULL); //stop timer
+            gettimeofday(&end, NULL);
             break;
         case 4:
             strncpy(algorithmName, "SA2OPT", MAX_ALGORITHM_NAME);
-            gettimeofday(&start, NULL); //start timer
+            gettimeofday(&start, NULL);
             twoOpt(&graph, tour);
-            gettimeofday(&end, NULL); //stop timer
+            gettimeofday(&end, NULL);
             break;
         default:
             printf("Invalid choice. Exiting...\n");
             return 1;
     }
 
-    //calculating execution time and tour length
     double executionTime = (end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec) / 1000000.0;
     double finalTourLength = calculateTourLength(&graph, tour);
 
-
     writeOutput(&graph, tour, finalTourLength, executionTime, algorithmName, inputFilename, "results");
 
-
-
-    printf("\n%s executed successfully, with execution time: %lf seconds\n", algorithmName, executionTime);
+    printf("\n✅ %s executed successfully, with execution time: %lf seconds\n", algorithmName, executionTime);
 
     return 0;
 }
+
 

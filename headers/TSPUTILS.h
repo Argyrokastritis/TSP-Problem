@@ -207,24 +207,6 @@ void writeOutput(struct Graph *graph, int *tour, double tourLength, double execu
     fclose(file);
 }
 
-/* double calculateTourLength(struct Graph *graph, int *tour) {
-    double tourLength = 0.0;
-    for (int i = 0; i < graph->numNodes; i++) {
-        int currNode = tour[i];
-        int nextNode = tour[(i + 1) % graph->numNodes];
-
-        double distance = calculateDistance(graph->nodes[currNode], graph->nodes[nextNode]);
-        tourLength += distance;
-
-        //tourLength += calculateDistance(graph->nodes[currNode], graph->nodes[nextNode]);
-
-        // Display the distance for each pair of nodes
-        //printf("Distance between nodes %d and %d: %.4lf\n", currNode, nextNode, distance);
-        //printf("Current node: %d, Next node: %d\n", currNode, nextNode);
-    }
-    //printf("\nTotal tour length: %.4lf\n", tourLength); // Print the total tour length
-    return tourLength;
-}*/
 double calculateTourLength(struct Graph *graph, int *tour) {
     if (graph == NULL || graph->numNodes == 0) {
         printf("Error: Cannot calculate tour length. Graph is NULL or has zero nodes.\n");
