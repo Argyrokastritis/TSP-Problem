@@ -28,11 +28,25 @@ struct Graph {
     int numNodes;
 };
 
-double calculateDistance(struct Node node1, struct Node node2) {
+/* double calculateDistance(struct Node node1, struct Node node2) {
     double x_diff = node1.x - node2.x;
     double y_diff = node1.y - node2.y;
     return sqrt(x_diff * x_diff + y_diff * y_diff);
+}*/
+
+double calculateDistance(struct Node node1, struct Node node2) {
+    double x_diff = node1.x - node2.x;
+    double y_diff = node1.y - node2.y;
+    double distanceSquared = x_diff * x_diff + y_diff * y_diff;
+
+    if (distanceSquared < 0) {
+        printf("Warning: Negative value under sqrt in calculateDistance.\n");
+        return 0.0;
+    }
+
+    return sqrt(distanceSquared);
 }
+
 
 // Function to prompt the user to select a file from a directory
 void selectInputFile(char *filename) {
@@ -193,7 +207,7 @@ void writeOutput(struct Graph *graph, int *tour, double tourLength, double execu
     fclose(file);
 }
 
-double calculateTourLength(struct Graph *graph, int *tour) {
+/* double calculateTourLength(struct Graph *graph, int *tour) {
     double tourLength = 0.0;
     for (int i = 0; i < graph->numNodes; i++) {
         int currNode = tour[i];
@@ -210,7 +224,29 @@ double calculateTourLength(struct Graph *graph, int *tour) {
     }
     //printf("\nTotal tour length: %.4lf\n", tourLength); // Print the total tour length
     return tourLength;
+}*/
+double calculateTourLength(struct Graph *graph, int *tour) {
+    if (graph == NULL || graph->numNodes == 0) {
+        printf("Error: Cannot calculate tour length. Graph is NULL or has zero nodes.\n");
+        return 0.0;
+    }
+
+    double tourLength = 0.0;
+    for (int i = 0; i < graph->numNodes; i++) {
+        int currNode = tour[i];
+        int nextNode = tour[(i + 1) % graph->numNodes];
+
+        double distance = calculateDistance(graph->nodes[currNode], graph->nodes[nextNode]);
+        tourLength += distance;
+
+        // Optional debug output
+        // printf("Distance between nodes %d and %d: %.4lf\n", currNode, nextNode, distance);
+    }
+
+    // printf("Total tour length: %.4lf\n", tourLength);
+    return tourLength;
 }
+
 
 
 #endif
