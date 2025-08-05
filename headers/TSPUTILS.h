@@ -28,12 +28,6 @@ struct Graph {
     int numNodes;
 };
 
-/* double calculateDistance(struct Node node1, struct Node node2) {
-    double x_diff = node1.x - node2.x;
-    double y_diff = node1.y - node2.y;
-    return sqrt(x_diff * x_diff + y_diff * y_diff);
-}*/
-
 double calculateDistance(struct Node node1, struct Node node2) {
     double x_diff = node1.x - node2.x;
     double y_diff = node1.y - node2.y;

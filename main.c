@@ -19,8 +19,8 @@ int main() {
 
     readInput(&graph, inputFilename);
 
-    printf("\n📌 Instance loaded: %s\n", inputFilename);
-    printf("📦 Number of nodes: %d\n", graph.numNodes);
+    printf("\nInstance loaded: %s\n", inputFilename);
+    printf("Number of nodes: %d\n", graph.numNodes);
 
     if (graph.numNodes < 100) {
         printf("⚠️ Warning: Small instance detected (<100 nodes). VNS may be unstable without proper parameter tuning.\n");
