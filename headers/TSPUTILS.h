@@ -15,7 +15,7 @@
 #define MAX_ALGORITHM_NAME 10
 #define MAX_FILENAME_LENGTH 30
 
-#define MAX_NODES 1100
+#define MAX_NODES 1400
 
 struct Node {
     int id;
