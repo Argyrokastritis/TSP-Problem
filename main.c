@@ -19,7 +19,8 @@ int main() {
 
     readInput(&graph, inputFilename);
 
-    printf("\nInstance loaded: %s\n", inputFilename);
+    printf("\n/896+"
+           " Instance loaded: %s\n", inputFilename);
     printf("Number of nodes: %d\n", graph.numNodes);
 
     if (graph.numNodes < 100) {
