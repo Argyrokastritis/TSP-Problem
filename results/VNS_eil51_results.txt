@@ -70,4 +70,4 @@ Tour vs MST Comparison:
   - Difference: 16.23%
 
 ---Execution Time---
-0.010029 seconds
+0.009872 seconds
