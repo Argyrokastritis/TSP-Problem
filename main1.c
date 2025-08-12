@@ -18,21 +18,27 @@ int main() {
 
     readInput(&graph, inputFilename);
 
-    printf("\n/896+ Instance loaded: %s\n", inputFilename);
+    printf("\nInstance loaded: %s\n", inputFilename);
     printf("Number of nodes: %d\n", graph.numNodes);
 
     if (graph.numNodes < 100) {
-        printf("⚠️ Warning: Small instance detected (<100 nodes). VNS may be unstable without proper parameter tuning.\n");
+        printf("Warning: Small instance detected (<100 nodes). VNS may be unstable without proper parameter tuning.\n");
     }
+
+    // Χρονισμός και υπολογισμός MST
+    struct timeval mstStart, mstEnd;
+    gettimeofday(&mstStart, NULL);
+    double mstLength = calculateMST(&graph);
+    gettimeofday(&mstEnd, NULL);
+    double mstTime = (mstEnd.tv_sec - mstStart.tv_sec) + (mstEnd.tv_usec - mstStart.tv_usec) / 1000000.0;
+
+    printf("MST Length: %.2f\n", mstLength);
+    printf("MST Execution Time: %.6f seconds\n\n", mstTime);
 
     int tour[MAX_NODES];
     for (int i = 0; i < graph.numNodes; i++) {
         tour[i] = i;
     }
-
-    // Υπολογισμός MST πριν την εκτέλεση του αλγορίθμου
-    double mstLength = calculateMST(&graph);
-    printf("📐 MST Length: %.2f\n\n", mstLength);
 
     struct timeval start, end;
 
@@ -46,7 +52,7 @@ int main() {
     printf("  4. Simulated Annealing on 2-Opt Algorithm (SA2OPT)\n");
     printf("Insert your choice (1, 2, 3 or 4) and press Enter: ");
     scanf("%d", &choice);
-    printf("\n---- Presentation of Distances Total Tour Length and execution times  -----\n\n");
+    printf("\n---- Presentation of Distances, Total Tour Length and Execution Times -----\n\n");
 
     switch (choice) {
         case 1:
@@ -60,7 +66,7 @@ int main() {
             strncpy(algorithmName, "VNS", MAX_ALGORITHM_NAME);
 
             if (graph.numNodes > MAX_NODES) {
-                printf("❌ Error: Number of nodes exceeds MAX_NODES (%d). Aborting VNS.\n", MAX_NODES);
+                printf("Error: Number of nodes exceeds MAX_NODES (%d). Aborting VNS.\n", MAX_NODES);
                 return 1;
             }
 
@@ -88,9 +94,12 @@ int main() {
     double executionTime = (end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec) / 1000000.0;
     double finalTourLength = calculateTourLength(&graph, tour);
 
-    writeOutput(&graph, tour, finalTourLength, mstLength, executionTime, algorithmName, inputFilename, "results");
+    writeOutput(&graph, tour, finalTourLength, mstLength, mstTime, executionTime, algorithmName, inputFilename, "results");
 
-    printf("\n✅ %s executed successfully, with execution time: %lf seconds\n", algorithmName, executionTime);
+    printf("\n%s executed successfully, with execution time: %.6f seconds\n", algorithmName, executionTime);
 
     return 0;
 }
+
+
+

@@ -127,7 +127,7 @@ void readInput(struct Graph *graph, const char *filename) {
     graph->numNodes = count;
     fclose(file);
 }
-
+/*
 void writeOutput(struct Graph *graph, int *tour, double tourLength, double executionTime, const char *algorithmName, const char *inputFilename, const char *outputFolder) {
 
     // Extract the filename from the input path
@@ -200,6 +200,138 @@ void writeOutput(struct Graph *graph, int *tour, double tourLength, double execu
 
     fclose(file);
 }
+/*
+void writeOutput(struct Graph *graph, int *tour, double tourLength, double mstLength, double executionTime, const char *algorithmName, const char *inputFilename, const char *outputFolder) {
+
+    // Extract the filename from the input path
+    const char *inputFilenameOnly = strrchr(inputFilename, '/');
+    if (inputFilenameOnly == NULL) {
+        inputFilenameOnly = inputFilename;
+    } else {
+        inputFilenameOnly++;
+    }
+
+    const char *dot = strrchr(inputFilenameOnly, '.');
+    if (dot == NULL) {
+        dot = inputFilenameOnly + strlen(inputFilenameOnly);
+    }
+
+    size_t length = dot - inputFilenameOnly;
+    char inputFileBaseName[length + 1];
+    strncpy(inputFileBaseName, inputFilenameOnly, length);
+    inputFileBaseName[length] = '\0';
+
+    struct stat st = {0};
+    if (stat(outputFolder, &st) == -1) {
+        mkdir(outputFolder);
+    }
+
+    char outputFilename[100];
+    snprintf(outputFilename, sizeof(outputFilename), "%s/%s_%s_results.txt", outputFolder, algorithmName, inputFileBaseName);
+
+    FILE *file = fopen(outputFilename, "w");
+    if (file == NULL) {
+        printf("Failed to open the output file.\n");
+        exit(1);
+    }
+
+    fprintf(file, "--- %s algorithm results for the problem %s ---\n\n", algorithmName, inputFilenameOnly);
+    fprintf(file, "Node_ID    X-coo        Y-coo\n");
+    for (int i = 0; i < graph->numNodes; i++) {
+        fprintf(file, "%d         %lf   %lf\n", graph->nodes[i].id, graph->nodes[i].x, graph->nodes[i].y);
+    }
+
+    fprintf(file, "\nSize of tour: %d\n", graph->numNodes);
+    fprintf(file, "MST Length: %lf\n", mstLength);
+
+    fprintf(file, "\nNumber of unique elements: %d\n", graph->numNodes);
+
+    fprintf(file, "\n---Final Tour---\n");
+    for (int i = 0; i < graph->numNodes; i++) {
+        fprintf(file, "%d ", graph->nodes[tour[i]].id);
+    }
+    fprintf(file, "%d\n", graph->nodes[tour[0]].id); // Return to the starting node to complete the cycle
+
+    fprintf(file, "\nFinal Tour Length: %lf\n", tourLength);
+
+    // Σύγκριση MST με τελικό tour
+    double percentageDiff = ((tourLength - mstLength) / mstLength) * 100.0;
+    fprintf(file, "\nTour vs MST Comparison:\n");
+    fprintf(file, "  - MST Length: %lf\n", mstLength);
+    fprintf(file, "  - Tour Length: %lf\n", tourLength);
+    fprintf(file, "  - Difference: %.2f%%\n", percentageDiff);
+
+    fprintf(file, "\n---Execution Time---\n");
+    fprintf(file, "%lf seconds\n", executionTime);
+
+    fclose(file);
+}
+*/
+void writeOutput(struct Graph *graph, int *tour, double tourLength, double mstLength, double mstTime, double executionTime, const char *algorithmName, const char *inputFilename, const char *outputFolder) {
+
+    const char *inputFilenameOnly = strrchr(inputFilename, '/');
+    if (inputFilenameOnly == NULL) {
+        inputFilenameOnly = inputFilename;
+    } else {
+        inputFilenameOnly++;
+    }
+
+    const char *dot = strrchr(inputFilenameOnly, '.');
+    if (dot == NULL) {
+        dot = inputFilenameOnly + strlen(inputFilenameOnly);
+    }
+
+    size_t length = dot - inputFilenameOnly;
+    char inputFileBaseName[length + 1];
+    strncpy(inputFileBaseName, inputFilenameOnly, length);
+    inputFileBaseName[length] = '\0';
+
+    struct stat st = {0};
+    if (stat(outputFolder, &st) == -1) {
+        mkdir(outputFolder);
+    }
+
+    char outputFilename[100];
+    snprintf(outputFilename, sizeof(outputFilename), "%s/%s_%s_results.txt", outputFolder, algorithmName, inputFileBaseName);
+
+    FILE *file = fopen(outputFilename, "w");
+    if (file == NULL) {
+        printf("Failed to open the output file.\n");
+        exit(1);
+    }
+
+    fprintf(file, "--- %s algorithm results for the problem %s ---\n\n", algorithmName, inputFilenameOnly);
+    fprintf(file, "Node_ID    X-coo        Y-coo\n");
+    for (int i = 0; i < graph->numNodes; i++) {
+        fprintf(file, "%d         %lf   %lf\n", graph->nodes[i].id, graph->nodes[i].x, graph->nodes[i].y);
+    }
+
+    fprintf(file, "\nSize of tour: %d\n", graph->numNodes);
+    fprintf(file, "MST Length: %lf\n", mstLength);
+    fprintf(file, "MST Execution Time: %lf seconds\n", mstTime);
+
+    fprintf(file, "\nNumber of unique elements: %d\n", graph->numNodes);
+
+    fprintf(file, "\n---Final Tour---\n");
+    for (int i = 0; i < graph->numNodes; i++) {
+        fprintf(file, "%d ", graph->nodes[tour[i]].id);
+    }
+    fprintf(file, "%d\n", graph->nodes[tour[0]].id);
+
+    fprintf(file, "\nFinal Tour Length: %lf\n", tourLength);
+
+    double percentageDiff = ((tourLength - mstLength) / mstLength) * 100.0;
+    fprintf(file, "\nTour vs MST Comparison:\n");
+    fprintf(file, "  - MST Length: %lf\n", mstLength);
+    fprintf(file, "  - Tour Length: %lf\n", tourLength);
+    fprintf(file, "  - Difference: %.2f%%\n", percentageDiff);
+
+    fprintf(file, "\n---Execution Time---\n");
+    fprintf(file, "%lf seconds\n", executionTime);
+
+    fclose(file);
+}
+
 
 double calculateTourLength(struct Graph *graph, int *tour) {
     if (graph == NULL || graph->numNodes == 0) {
@@ -223,6 +355,55 @@ double calculateTourLength(struct Graph *graph, int *tour) {
     return tourLength;
 }
 
+double calculateMST(struct Graph *graph) {
+    int n = graph->numNodes;
+    double *key = malloc(n * sizeof(double));
+    bool *inMST = malloc(n * sizeof(bool));
+    int *parent = malloc(n * sizeof(int));
+    double totalWeight = 0.0;
+
+    for (int i = 0; i < n; i++) {
+        key[i] = DBL_MAX;
+        inMST[i] = false;
+        parent[i] = -1;
+    }
+
+    key[0] = 0.0;
+
+    for (int count = 0; count < n - 1; count++) {
+        double min = DBL_MAX;
+        int u = -1;
+
+        for (int v = 0; v < n; v++) {
+            if (!inMST[v] && key[v] < min) {
+                min = key[v];
+                u = v;
+            }
+        }
+
+        inMST[u] = true;
+
+        for (int v = 0; v < n; v++) {
+            if (!inMST[v]) {
+                double weight = calculateDistance(graph->nodes[u], graph->nodes[v]);
+                if (weight < key[v]) {
+                    key[v] = weight;
+                    parent[v] = u;
+                }
+            }
+        }
+    }
+
+    for (int i = 1; i < n; i++) {
+        totalWeight += calculateDistance(graph->nodes[i], graph->nodes[parent[i]]);
+    }
+
+    free(key);
+    free(inMST);
+    free(parent);
+
+    return totalWeight;
+}
 
 
 #endif

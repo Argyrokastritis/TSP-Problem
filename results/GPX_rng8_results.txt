@@ -1,4 +1,4 @@
---- VNS algorithm results for the problem rng8.tsp ---
+--- GPX algorithm results for the problem rng8.tsp ---
 
 Node_ID    X-coo        Y-coo
 1         2489.000000   1520.000000
@@ -12,19 +12,19 @@ Node_ID    X-coo        Y-coo
 
 Size of tour: 8
 MST Length: 5103.516980
-MST Execution Time: 0.000024 seconds
+MST Execution Time: 0.000028 seconds
 
 Number of unique elements: 8
 
 ---Final Tour---
-7 5 4 2 3 6 1 8 7
+1 2 3 4 5 6 7 8 1
 
-Final Tour Length: 8681.067327
+Final Tour Length: 13806.296439
 
 Tour vs MST Comparison:
   - MST Length: 5103.516980
-  - Tour Length: 8681.067327
-  - Difference: 70.10%
+  - Tour Length: 13806.296439
+  - Difference: 170.53%
 
 ---Execution Time---
-0.000132 seconds
+0.000419 seconds
