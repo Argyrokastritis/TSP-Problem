@@ -16,14 +16,14 @@ MST Execution Time: 0.000004 seconds
 Number of unique elements: 7
 
 ---Final Tour---
-1 2 3 4 5 6 7 1
+1 7 5 6 3 2 4 1
 
-Final Tour Length: 165.506512
+Final Tour Length: 127.803508
 
 Tour vs MST Comparison:
   - MST Length: 92.468393
-  - Tour Length: 165.506512
-  - Difference: 78.99%
+  - Tour Length: 127.803508
+  - Difference: 38.21%
 
 ---Execution Time---
-0.000021 seconds
+0.044645 seconds

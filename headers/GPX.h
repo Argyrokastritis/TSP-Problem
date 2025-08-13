@@ -88,11 +88,31 @@ void gpcxCrossover(struct Graph *graph, int *parent1, int *parent2, int *offspri
         isParent1Turn = !isParent1Turn;
     }
 }
+// Fisher-Yates shuffle για τυχαία αναδιάταξη
+void shuffle(int *array, int n) {
+    for (int i = n - 1; i > 0; i--) {
+        int j = rand() % (i + 1);
+        int temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+    }
+}
 
+// Αρχικοποίηση πληθυσμού με τυχαίες διαδρομές
+void initializePopulation(struct Graph *graph) {
+    for (int i = 0; i < POPULATION_SIZE; i++) {
+        for (int j = 0; j < graph->numNodes; j++) {
+            population[i][j] = j;
+        }
+        shuffle(population[i], graph->numNodes);
+    }
+}
 
+/*
 void gpcxAlgorithm(struct Graph *graph, int *tour) {
     int numNodes = graph->numNodes;
-
+    // Αρχικοποίηση πληθυσμού
+    initializePopulation(graph);
     for (int generation = 0; generation < MAX_GENERATIONS; generation++) {
         // Evaluate the fitness of the current tour (calculate total tour length)
         double tourLength = calculateTourLength(graph, tour);
@@ -153,7 +173,89 @@ void gpcxAlgorithm(struct Graph *graph, int *tour) {
         }
     }
 
+}*/
+void gpcxAlgorithm(struct Graph *graph, int *tour) {
+    int numNodes = graph->numNodes;
+    initializePopulation(graph);
+
+    int bestTour[MAX_NODES];
+    double bestFitness = DBL_MAX;
+
+    for (int generation = 0; generation < MAX_GENERATIONS; generation++) {
+        // Evaluate current population and update best tour
+        for (int i = 0; i < POPULATION_SIZE; i++) {
+            double fitness = evaluateFitness(graph, population[i]);
+            if (fitness < bestFitness) {
+                bestFitness = fitness;
+                for (int j = 0; j < numNodes; j++) {
+                    bestTour[j] = population[i][j];
+                }
+            }
+        }
+
+        // Selection: Choose two parents randomly
+        int parent1[MAX_NODES];
+        int parent2[MAX_NODES];
+        int parent1Idx = rand() % POPULATION_SIZE;
+        int parent2Idx;
+        do {
+            parent2Idx = rand() % POPULATION_SIZE;
+        } while (parent2Idx == parent1Idx);
+
+        for (int i = 0; i < numNodes; i++) {
+            parent1[i] = population[parent1Idx][i];
+            parent2[i] = population[parent2Idx][i];
+        }
+
+        // Crossover
+        int offspring1[MAX_NODES];
+        int offspring2[MAX_NODES];
+        gpcxCrossover(graph, parent1, parent2, offspring1, offspring2);
+
+        // Evaluate offspring
+        double offspring1Length = evaluateFitness(graph, offspring1);
+        double offspring2Length = evaluateFitness(graph, offspring2);
+
+        // Replacement: Find two worst individuals
+        int worst1Idx = -1, worst2Idx = -1;
+        double worst1Fitness = -1.0, worst2Fitness = -1.0;
+
+        for (int i = 0; i < POPULATION_SIZE; i++) {
+            double fitness = evaluateFitness(graph, population[i]);
+            if (fitness > worst1Fitness) {
+                worst2Fitness = worst1Fitness;
+                worst2Idx = worst1Idx;
+                worst1Fitness = fitness;
+                worst1Idx = i;
+            } else if (fitness > worst2Fitness) {
+                worst2Fitness = fitness;
+                worst2Idx = i;
+            }
+        }
+
+        // Replace worst individuals with offspring
+        for (int i = 0; i < numNodes; i++) {
+            population[worst1Idx][i] = offspring1[i];
+            population[worst2Idx][i] = offspring2[i];
+        }
+
+        // Optional: print progress
+        if (generation % 100 == 0) {
+            printf("Generation %d: Best fitness = %.4lf\n", generation, bestFitness);
+        }
+
+        // Termination condition
+        if (bestFitness < THRESHOLD_FITNESS) {
+            break;
+        }
+    }
+
+    // Copy best tour to output
+    for (int i = 0; i < numNodes; i++) {
+        tour[i] = bestTour[i];
+    }
 }
+
 
 #endif
 
