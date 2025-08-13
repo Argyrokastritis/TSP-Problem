@@ -98,6 +98,10 @@ int main() {
     printf("\nInstance loaded: %s\n", inputFilename);
     printf("Number of nodes: %d\n", graph.numNodes);
 
+    for (int i = 0; i < graph.numNodes; i++) {
+        tour[i] = i;
+    }
+
     if (graph.numNodes < 100) {
         printf("Warning: Small instance detected (<100 nodes). VNS may be unstable without proper parameter tuning.\n");
     }
